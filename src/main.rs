@@ -25,8 +25,17 @@ fn main() -> Result<()> {
             box2markdown::io::write_output(args.output.as_deref(), &md)?;
             Ok(())
         }
-        box2markdown::cli::Commands::ToHtml { .. } => {
-            todo!("Phase 5: md_to_html")
+        box2markdown::cli::Commands::ToHtml { args } => {
+            let md = box2markdown::io::read_input(args.input.as_deref())?;
+            let html = box2markdown::convert::md_to_html::convert(&md)?;
+            if args.copy {
+                let plain = html.replace('\n', " ");
+                box2markdown::clipboard::write_html(&html, &plain)?;
+                eprintln!("HTML copied to clipboard");
+            } else {
+                box2markdown::io::write_output(args.output.as_deref(), &html)?;
+            }
+            Ok(())
         }
         box2markdown::cli::Commands::ToBoxnote { .. } => {
             todo!("Phase 6: md_to_boxnote")
