@@ -6,7 +6,7 @@ fn main() -> Result<()> {
 
     match cli.command {
         box2md::cli::Commands::ToMd { args } => {
-            let md = if args.paste {
+            let md = if args.from_clipboard {
                 let html = box2md::clipboard::read_html()?
                     .ok_or_else(|| anyhow::anyhow!("no HTML content in clipboard"))?;
                 box2md::convert::html_to_md::convert(&html)?
@@ -27,7 +27,7 @@ fn main() -> Result<()> {
             Ok(())
         }
         box2md::cli::Commands::ToHtml { args } => {
-            let md = if args.paste {
+            let md = if args.from_clipboard {
                 box2md::clipboard::read_text()?
                     .ok_or_else(|| anyhow::anyhow!("no text content in clipboard"))?
             } else {

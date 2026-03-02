@@ -7,7 +7,7 @@ A CLI tool to convert [Box Notes](https://www.box.com/en-gb/notes) to Markdown a
 - **Box Note JSON → Markdown** — Convert `.boxnote` files directly
 - **Box Note HTML → Markdown** — Read rich-text HTML from clipboard (as copied from Box Note in browser)
 - **Markdown → HTML** — Convert Markdown to GFM-compatible HTML
-- **Clipboard integration** — `--paste` to read from clipboard, `--copy` to write results back
+- **Clipboard integration** — `--from-clipboard` (`-p`) to read from clipboard, `--copy` (`-c`) to write results back
 - Handles Box Note-specific quirks: non-standard list nesting, `table_header` nodes, version prefix in JSON files
 
 ## Installation
@@ -42,10 +42,10 @@ box2md to-md -i note.boxnote
 box2md to-md -i note.boxnote -o note.md
 
 # From clipboard (HTML copied from Box Note in browser) to clipboard
-box2md to-md --paste --copy
+box2md to-md -p -c
 
 # From clipboard to stdout
-box2md to-md --paste
+box2md to-md --from-clipboard
 
 # From stdin
 cat note.boxnote | box2md to-md
@@ -58,7 +58,7 @@ cat note.boxnote | box2md to-md
 box2md to-html -i note.md
 
 # From clipboard to clipboard (as rich HTML)
-box2md to-html --paste --copy
+box2md to-html -p -c
 
 # From stdin
 cat note.md | box2md to-html
@@ -68,17 +68,17 @@ cat note.md | box2md to-html
 
 | Flag | Description |
 |---|---|
-| `-i, --input <FILE>` | Read from file (conflicts with `--paste`) |
+| `-i, --input <FILE>` | Read from file (conflicts with `--from-clipboard`) |
 | `-o, --output <FILE>` | Write to file (conflicts with `--copy`) |
-| `--paste` | Read from clipboard |
-| `--copy` | Write to clipboard |
+| `-p, --from-clipboard` | Read from clipboard |
+| `-c, --copy` | Write to clipboard |
 
 ## How it works
 
 | Input | Command | Pipeline |
 |---|---|---|
 | `.boxnote` file (JSON) | `to-md -i` | Box Note JSON → Markdown |
-| Box Note clipboard (HTML) | `to-md --paste` | HTML → Markdown |
+| Box Note clipboard (HTML) | `to-md -p` | HTML → Markdown |
 | Markdown | `to-html` | Markdown → GFM HTML |
 
 Box Notes use a ProseMirror-based JSON format internally. When copied from the browser, they produce HTML. `box2md` handles both formats transparently via the `to-md` command.

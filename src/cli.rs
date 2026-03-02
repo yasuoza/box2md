@@ -28,31 +28,31 @@ pub enum Commands {
 #[derive(Debug, Args)]
 pub struct ToMdArgs {
     /// Box Note JSON file (.boxnote) to convert
-    #[arg(short, long, conflicts_with = "paste")]
+    #[arg(short, long, conflicts_with = "from_clipboard")]
     pub input: Option<PathBuf>,
     /// Output Markdown file (default: stdout)
     #[arg(short, long, conflicts_with = "copy")]
     pub output: Option<PathBuf>,
     /// Read HTML from clipboard (as copied from Box Note in browser)
-    #[arg(long)]
-    pub paste: bool,
+    #[arg(short = 'p', long)]
+    pub from_clipboard: bool,
     /// Write Markdown result to clipboard
-    #[arg(long)]
+    #[arg(short, long)]
     pub copy: bool,
 }
 
 #[derive(Debug, Args)]
 pub struct ToHtmlArgs {
     /// Markdown file to convert
-    #[arg(short, long, conflicts_with = "paste")]
+    #[arg(short, long, conflicts_with = "from_clipboard")]
     pub input: Option<PathBuf>,
     /// Output HTML file (default: stdout)
     #[arg(short, long, conflicts_with = "copy")]
     pub output: Option<PathBuf>,
     /// Read Markdown from clipboard
-    #[arg(long)]
-    pub paste: bool,
+    #[arg(short = 'p', long)]
+    pub from_clipboard: bool,
     /// Write HTML result to clipboard as rich text
-    #[arg(long)]
+    #[arg(short, long)]
     pub copy: bool,
 }
