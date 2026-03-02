@@ -81,3 +81,39 @@ fn boxnote_nested_list_3_levels() {
     );
     assert!(md.contains("  - D\n"), "expected nested item D, got: {md}");
 }
+
+#[test]
+fn checklist_html_data_checked() {
+    let html = r#"<ul data-check-list="true"><li data-checked="true">Done</li><li data-checked="false">Todo</li></ul>"#;
+    let md = html_to_md::convert(html).unwrap();
+    assert!(md.contains("[x] Done"), "expected [x] Done, got: {md}");
+    assert!(md.contains("[ ] Todo"), "expected [ ] Todo, got: {md}");
+}
+
+#[test]
+fn checklist_html_input_checkbox() {
+    let html = r#"<ul><li><input type="checkbox" checked>Done</li><li><input type="checkbox">Todo</li></ul>"#;
+    let md = html_to_md::convert(html).unwrap();
+    assert!(md.contains("[x] Done"), "expected [x] Done, got: {md}");
+    assert!(md.contains("[ ] Todo"), "expected [ ] Todo, got: {md}");
+}
+
+#[test]
+fn strikethrough_s_tag() {
+    let html = r#"<p><s>deleted</s></p>"#;
+    let md = html_to_md::convert(html).unwrap();
+    assert!(
+        md.contains("~~deleted~~"),
+        "expected ~~deleted~~, got: {md}"
+    );
+}
+
+#[test]
+fn strikethrough_del_tag() {
+    let html = r#"<p><del>deleted</del></p>"#;
+    let md = html_to_md::convert(html).unwrap();
+    assert!(
+        md.contains("~~deleted~~"),
+        "expected ~~deleted~~, got: {md}"
+    );
+}
