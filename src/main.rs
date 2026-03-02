@@ -14,8 +14,16 @@ fn main() -> Result<()> {
             box2markdown::io::write_output(args.output.as_deref(), &md)?;
             Ok(())
         }
-        box2markdown::cli::Commands::FromHtml { .. } => {
-            todo!("Phase 4: html_to_md")
+        box2markdown::cli::Commands::FromHtml { args } => {
+            let html = if args.paste {
+                box2markdown::clipboard::read_html()?
+                    .ok_or_else(|| anyhow::anyhow!("no HTML content in clipboard"))?
+            } else {
+                box2markdown::io::read_input(args.input.as_deref())?
+            };
+            let md = box2markdown::convert::html_to_md::convert(&html)?;
+            box2markdown::io::write_output(args.output.as_deref(), &md)?;
+            Ok(())
         }
         box2markdown::cli::Commands::ToHtml { .. } => {
             todo!("Phase 5: md_to_html")
