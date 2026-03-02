@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "schema_version": 1,
+  "doc": {
+    "type": "doc",
+    "content": [
+      {
+        "type": "table",
+        "content": [
+          {
+            "type": "table_row",
+            "content": [
+              { "type": "table_header", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Category" }] }] },
+              { "type": "table_header", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Details" }] }] }
+            ]
+          },
+          {
+            "type": "table_row",
+            "content": [
+              { "type": "table_cell", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Features" }] }] },
+              {
+                "type": "table_cell",
+                "content": [
+                  {
+                    "type": "bullet_list",
+                    "content": [
+                      {
+                        "type": "list_item",
+                        "content": [
+                          { "type": "paragraph", "content": [{ "type": "text", "text": "Authentication" }] },
+                          {
+                            "type": "bullet_list",
+                            "content": [
+                              { "type": "list_item", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "SSO" }] }] },
+                              { "type": "list_item", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "MFA" }] }] }
+                            ]
+                          }
+                        ]
+                      },
+                      { "type": "list_item", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Authorization" }] }] }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,3 +1,3 @@
-*   Item 1
-    *   Nested item
-*   Item 2
+- Item 1
+  - Nested item
+- Item 2

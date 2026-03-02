@@ -22,44 +22,40 @@ pub enum Commands {
         #[command(flatten)]
         args: ToHtmlArgs,
     },
-    ToBoxnote {
-        #[command(flatten)]
-        args: ToBoxnoteArgs,
-    },
 }
 
 #[derive(Debug, Args)]
 pub struct ToMdArgs {
-    #[arg(short, long)]
+    #[arg(short, long, conflicts_with = "paste")]
     pub input: Option<PathBuf>,
-    #[arg(short, long)]
+    #[arg(short, long, conflicts_with = "copy")]
     pub output: Option<PathBuf>,
+    #[arg(long)]
+    pub paste: bool,
+    #[arg(long)]
+    pub copy: bool,
 }
 
 #[derive(Debug, Args)]
 pub struct FromHtmlArgs {
     #[arg(short, long, conflicts_with = "paste")]
     pub input: Option<PathBuf>,
-    #[arg(short, long)]
+    #[arg(short, long, conflicts_with = "copy")]
     pub output: Option<PathBuf>,
     #[arg(long)]
     pub paste: bool,
-}
-
-#[derive(Debug, Args)]
-pub struct ToHtmlArgs {
-    #[arg(short, long)]
-    pub input: Option<PathBuf>,
-    #[arg(short, long, conflicts_with = "copy")]
-    pub output: Option<PathBuf>,
     #[arg(long)]
     pub copy: bool,
 }
 
 #[derive(Debug, Args)]
-pub struct ToBoxnoteArgs {
-    #[arg(short, long)]
+pub struct ToHtmlArgs {
+    #[arg(short, long, conflicts_with = "paste")]
     pub input: Option<PathBuf>,
-    #[arg(short, long)]
+    #[arg(short, long, conflicts_with = "copy")]
     pub output: Option<PathBuf>,
+    #[arg(long)]
+    pub paste: bool,
+    #[arg(long)]
+    pub copy: bool,
 }

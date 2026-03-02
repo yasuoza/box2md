@@ -61,11 +61,3 @@ fn empty_html_to_md() {
     let md = box2markdown::convert::html_to_md::convert("").unwrap();
     assert!(md.trim().is_empty());
 }
-
-#[test]
-fn empty_markdown_to_boxnote() {
-    let json = box2markdown::convert::md_to_boxnote::convert("").unwrap();
-    let doc: BoxNoteDocument = serde_json::from_str(&json).unwrap();
-    assert!(doc.doc.validate().is_ok());
-    assert!(doc.doc.content.is_empty());
-}

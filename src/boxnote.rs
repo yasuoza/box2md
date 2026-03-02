@@ -75,6 +75,10 @@ pub enum BlockNode {
         attrs: Option<TableCellAttrs>,
         content: Vec<BlockNode>,
     },
+    TableHeader {
+        attrs: Option<TableCellAttrs>,
+        content: Vec<BlockNode>,
+    },
     HorizontalRule,
     HardBreak,
     Unknown {
@@ -130,6 +134,10 @@ impl BlockNode {
                 content: parse_vec(&raw, "content")?,
             }),
             "table_cell" => Ok(Self::TableCell {
+                attrs: parse_opt(&raw, "attrs")?,
+                content: parse_vec(&raw, "content")?,
+            }),
+            "table_header" => Ok(Self::TableHeader {
                 attrs: parse_opt(&raw, "attrs")?,
                 content: parse_vec(&raw, "content")?,
             }),
@@ -204,6 +212,8 @@ pub enum InlineMark {
     Underline,
     Strikethrough,
     Link { attrs: LinkAttrs },
+    AuthorId,
+    Highlight,
     Unknown { mark_type: String },
 }
 
@@ -224,6 +234,8 @@ impl InlineMark {
             "link" => Ok(Self::Link {
                 attrs: parse_req(&raw, "attrs")?,
             }),
+            "author_id" => Ok(Self::AuthorId),
+            "highlight" => Ok(Self::Highlight),
             _ => Ok(Self::Unknown { mark_type }),
         }
     }

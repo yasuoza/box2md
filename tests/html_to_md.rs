@@ -67,3 +67,17 @@ fn ordered_list_html() {
     assert!(md.contains("First"));
     assert!(md.contains("Second"));
 }
+
+#[test]
+fn boxnote_nested_list_3_levels() {
+    // Box Note uses non-standard nesting: <ul> as sibling of <li> instead of child
+    let html = r#"<ul><li>A</li><ul><li>B</li><ul><li>C</li></ul><li>D</li></ul></ul>"#;
+    let md = html_to_md::convert(html).unwrap();
+    assert!(md.contains("- A\n"), "expected top-level item A, got: {md}");
+    assert!(md.contains("  - B\n"), "expected nested item B, got: {md}");
+    assert!(
+        md.contains("    - C\n"),
+        "expected deeply nested item C, got: {md}"
+    );
+    assert!(md.contains("  - D\n"), "expected nested item D, got: {md}");
+}

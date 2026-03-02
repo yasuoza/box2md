@@ -6,12 +6,26 @@ fn main() -> Result<()> {
 
     match cli.command {
         box2markdown::cli::Commands::ToMd { args } => {
-            let input = box2markdown::io::read_input(args.input.as_deref())?;
+            let input = if args.paste {
+                box2markdown::clipboard::read_text()?
+                    .ok_or_else(|| anyhow::anyhow!("no text content in clipboard"))?
+            } else {
+                box2markdown::io::read_input(args.input.as_deref())?
+            };
+            let json = input
+                .find('{')
+                .map(|i| &input[i..])
+                .unwrap_or(&input);
             let doc: box2markdown::boxnote::BoxNoteDocument =
-                serde_json::from_str(&input).context("failed to parse Box Note JSON")?;
+                serde_json::from_str(json).context("failed to parse Box Note JSON")?;
             doc.doc.validate().map_err(anyhow::Error::msg)?;
             let md = box2markdown::convert::boxnote_to_md::convert(&doc)?;
-            box2markdown::io::write_output(args.output.as_deref(), &md)?;
+            if args.copy {
+                box2markdown::clipboard::write_text(&md)?;
+                eprintln!("Markdown copied to clipboard");
+            } else {
+                box2markdown::io::write_output(args.output.as_deref(), &md)?;
+            }
             Ok(())
         }
         box2markdown::cli::Commands::FromHtml { args } => {
@@ -22,11 +36,21 @@ fn main() -> Result<()> {
                 box2markdown::io::read_input(args.input.as_deref())?
             };
             let md = box2markdown::convert::html_to_md::convert(&html)?;
-            box2markdown::io::write_output(args.output.as_deref(), &md)?;
+            if args.copy {
+                box2markdown::clipboard::write_text(&md)?;
+                eprintln!("Markdown copied to clipboard");
+            } else {
+                box2markdown::io::write_output(args.output.as_deref(), &md)?;
+            }
             Ok(())
         }
         box2markdown::cli::Commands::ToHtml { args } => {
-            let md = box2markdown::io::read_input(args.input.as_deref())?;
+            let md = if args.paste {
+                box2markdown::clipboard::read_text()?
+                    .ok_or_else(|| anyhow::anyhow!("no text content in clipboard"))?
+            } else {
+                box2markdown::io::read_input(args.input.as_deref())?
+            };
             let html = box2markdown::convert::md_to_html::convert(&md)?;
             if args.copy {
                 let plain = html.replace('\n', " ");
@@ -35,12 +59,6 @@ fn main() -> Result<()> {
             } else {
                 box2markdown::io::write_output(args.output.as_deref(), &html)?;
             }
-            Ok(())
-        }
-        box2markdown::cli::Commands::ToBoxnote { args } => {
-            let md = box2markdown::io::read_input(args.input.as_deref())?;
-            let json = box2markdown::convert::md_to_boxnote::convert(&md)?;
-            box2markdown::io::write_output(args.output.as_deref(), &json)?;
             Ok(())
         }
     }

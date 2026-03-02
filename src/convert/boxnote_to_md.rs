@@ -195,7 +195,9 @@ fn convert_block(
                 if let BlockNode::TableRow { content } = row {
                     let mut cells = Vec::new();
                     for cell in content {
-                        if let BlockNode::TableCell { content, .. } = cell {
+                        if let BlockNode::TableCell { content, .. }
+                        | BlockNode::TableHeader { content, .. } = cell
+                        {
                             cells.push(render_table_cell_text(content, warnings));
                         } else {
                             warnings.push(format!(
@@ -239,7 +241,7 @@ fn convert_block(
                 output.push('\n');
             }
         }
-        BlockNode::TableRow { .. } | BlockNode::TableCell { .. } => {
+        BlockNode::TableRow { .. } | BlockNode::TableCell { .. } | BlockNode::TableHeader { .. } => {
             warnings.push(format!(
                 "WARN: unknown node type \"{}\" skipped",
                 block_node_name(block)
@@ -351,6 +353,8 @@ fn apply_marks(text: &str, marks: &[InlineMark], warnings: &mut Vec<String>) -> 
             InlineMark::Code => format!("`{rendered}`"),
             InlineMark::Underline => rendered,
             InlineMark::Strikethrough => format!("~~{rendered}~~"),
+            InlineMark::AuthorId => rendered,
+            InlineMark::Highlight => rendered,
             InlineMark::Link { attrs } => format!("[{rendered}]({})", attrs.href),
             InlineMark::Unknown { mark_type } => {
                 warnings.push(format!("WARN: unknown mark type \"{mark_type}\" skipped"));
@@ -362,19 +366,24 @@ fn apply_marks(text: &str, marks: &[InlineMark], warnings: &mut Vec<String>) -> 
 }
 
 fn render_table_cell_text(content: &[BlockNode], warnings: &mut Vec<String>) -> String {
-    let mut value = String::new();
+    let mut parts: Vec<String> = Vec::new();
     for block in content {
         match block {
             BlockNode::Paragraph { content } => {
-                if !value.is_empty() {
-                    value.push(' ');
-                }
-                value.push_str(&render_inline_nodes(
+                let text = render_inline_nodes(
                     content.as_deref().unwrap_or(&[]),
                     warnings,
-                ));
+                );
+                if !text.is_empty() {
+                    parts.push(text);
+                }
             }
-            BlockNode::HardBreak => value.push(' '),
+            BlockNode::BulletList { .. }
+            | BlockNode::OrderedList { .. }
+            | BlockNode::CheckList { .. } => {
+                parts.push(render_list_as_html(block, warnings));
+            }
+            BlockNode::HardBreak => {}
             BlockNode::Unknown { node_type, .. } => {
                 warnings.push(format!("WARN: unknown node type \"{node_type}\" skipped"));
             }
@@ -383,15 +392,84 @@ fn render_table_cell_text(content: &[BlockNode], warnings: &mut Vec<String>) -> 
                 convert_block(block, &mut nested, warnings, 0, &ListContext::None);
                 let compact = nested.trim().replace('\n', " ");
                 if !compact.is_empty() {
-                    if !value.is_empty() {
-                        value.push(' ');
-                    }
-                    value.push_str(&compact);
+                    parts.push(compact);
                 }
             }
         }
     }
-    value
+    parts.join("<br>")
+}
+
+fn render_list_as_html(block: &BlockNode, warnings: &mut Vec<String>) -> String {
+    match block {
+        BlockNode::BulletList { content } => {
+            let mut html = String::from("<ul>");
+            for item in content {
+                if let BlockNode::ListItem { content } = item {
+                    html.push_str("<li>");
+                    html.push_str(&render_list_item_html(content, warnings));
+                    html.push_str("</li>");
+                }
+            }
+            html.push_str("</ul>");
+            html
+        }
+        BlockNode::OrderedList { content, .. } => {
+            let mut html = String::from("<ol>");
+            for item in content {
+                if let BlockNode::ListItem { content } = item {
+                    html.push_str("<li>");
+                    html.push_str(&render_list_item_html(content, warnings));
+                    html.push_str("</li>");
+                }
+            }
+            html.push_str("</ol>");
+            html
+        }
+        BlockNode::CheckList { content } => {
+            let mut html = String::from("<ul>");
+            for item in content {
+                if let BlockNode::CheckListItem { attrs, content } = item {
+                    let check = if attrs.checked { "☑ " } else { "☐ " };
+                    html.push_str("<li>");
+                    html.push_str(check);
+                    html.push_str(&render_list_item_html(content, warnings));
+                    html.push_str("</li>");
+                }
+            }
+            html.push_str("</ul>");
+            html
+        }
+        _ => String::new(),
+    }
+}
+
+fn render_list_item_html(content: &[BlockNode], warnings: &mut Vec<String>) -> String {
+    let mut parts = Vec::new();
+    for block in content {
+        match block {
+            BlockNode::Paragraph { content } => {
+                parts.push(render_inline_nodes(
+                    content.as_deref().unwrap_or(&[]),
+                    warnings,
+                ));
+            }
+            BlockNode::BulletList { .. }
+            | BlockNode::OrderedList { .. }
+            | BlockNode::CheckList { .. } => {
+                parts.push(render_list_as_html(block, warnings));
+            }
+            _ => {
+                let mut nested = String::new();
+                convert_block(block, &mut nested, warnings, 0, &ListContext::None);
+                let compact = nested.trim().replace('\n', " ");
+                if !compact.is_empty() {
+                    parts.push(compact);
+                }
+            }
+        }
+    }
+    parts.join("")
 }
 
 fn write_indented_text(output: &mut String, indent: usize, text: &str) {
@@ -430,6 +508,7 @@ fn block_node_name(block: &BlockNode) -> &str {
         BlockNode::Table { .. } => "table",
         BlockNode::TableRow { .. } => "table_row",
         BlockNode::TableCell { .. } => "table_cell",
+        BlockNode::TableHeader { .. } => "table_header",
         BlockNode::HorizontalRule => "horizontal_rule",
         BlockNode::HardBreak => "hard_break",
         BlockNode::Unknown { node_type, .. } => node_type,

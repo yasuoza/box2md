@@ -37,6 +37,14 @@ fn table() {
 }
 
 #[test]
+fn table_with_list() {
+    assert_eq!(
+        convert_fixture("table_with_list"),
+        expected("table_with_list")
+    );
+}
+
+#[test]
 fn code_block() {
     assert_eq!(convert_fixture("code_block"), expected("code_block"));
 }
