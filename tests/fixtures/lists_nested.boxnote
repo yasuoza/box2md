@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "schema_version": 1,
+  "doc": {
+    "type": "doc",
+    "content": [
+      {
+        "type": "bullet_list",
+        "content": [
+          {
+            "type": "list_item",
+            "content": [
+              { "type": "paragraph", "content": [{ "type": "text", "text": "Item 1" }] },
+              {
+                "type": "bullet_list",
+                "content": [
+                  {
+                    "type": "list_item",
+                    "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Nested item" }] }]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "list_item",
+            "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Item 2" }] }]
+          }
+        ]
+      }
+    ]
+  }
+}

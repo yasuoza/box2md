@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "schema_version": 1,
+  "doc": {
+    "type": "doc",
+    "content": [
+      {
+        "type": "code_block",
+        "attrs": { "language": "rust" },
+        "content": [{ "type": "text", "text": "fn main() {}" }]
+      }
+    ]
+  }
+}
