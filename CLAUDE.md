@@ -1,6 +1,6 @@
-# box2markdown
+# box2md
 
-CLI tool for converting between Box Note and Markdown.
+CLI tool for converting Box Note to Markdown.
 
 ## Tech Stack
 
@@ -15,3 +15,4 @@ CLI tool for converting between Box Note and Markdown.
 
 - Add tests when implementing changes
 - Commit messages follow Conventional Commits (in English)
+- Run `cargo fmt` after code changes before committing
