@@ -22,10 +22,13 @@ cargo install --path .
 
 ### Pre-built binary
 
-```sh
-cargo build --release
-# Binary at target/release/box2md
-```
+Download from [Releases](https://github.com/yasuoza/box2md/releases).
+
+> **macOS note:** The binary is not signed. macOS Gatekeeper will block it on first run. To allow execution:
+>
+> ```sh
+> xattr -d com.apple.quarantine box2md
+> ```
 
 ## Usage
 
