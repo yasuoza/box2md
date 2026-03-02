@@ -1,4 +1,4 @@
-use box2markdown::convert::html_to_md;
+use box2md::convert::html_to_md;
 
 fn convert_html_fixture(name: &str) -> String {
     let input = std::fs::read_to_string(format!("tests/fixtures/{name}.html")).unwrap();

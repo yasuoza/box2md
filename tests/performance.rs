@@ -1,5 +1,5 @@
-use box2markdown::boxnote::BoxNoteDocument;
-use box2markdown::convert::boxnote_to_md;
+use box2md::boxnote::BoxNoteDocument;
+use box2md::convert::boxnote_to_md;
 use std::time::Instant;
 
 #[test]
