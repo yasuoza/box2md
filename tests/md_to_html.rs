@@ -21,7 +21,10 @@ fn headings_md_to_html() {
 
 #[test]
 fn formatting_md_to_html() {
-    assert_eq!(convert_md_fixture("formatting"), expected_tohtml("formatting"));
+    assert_eq!(
+        convert_md_fixture("formatting"),
+        expected_tohtml("formatting")
+    );
 }
 
 #[test]

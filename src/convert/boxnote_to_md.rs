@@ -269,7 +269,10 @@ fn render_list_item(
     let mut consumed_first_paragraph = false;
     if let Some(BlockNode::Paragraph { content }) = content.first() {
         output.push_str(marker);
-        output.push_str(&render_inline_nodes(content.as_deref().unwrap_or(&[]), warnings));
+        output.push_str(&render_inline_nodes(
+            content.as_deref().unwrap_or(&[]),
+            warnings,
+        ));
         output.push('\n');
         consumed_first_paragraph = true;
     } else {
@@ -327,7 +330,9 @@ fn render_inline_nodes(nodes: &[InlineNode], warnings: &mut Vec<String>) -> Stri
     let mut rendered = String::new();
     for node in nodes {
         match node {
-            InlineNode::Text { text, marks } => rendered.push_str(&apply_marks(text, marks, warnings)),
+            InlineNode::Text { text, marks } => {
+                rendered.push_str(&apply_marks(text, marks, warnings))
+            }
             InlineNode::HardBreak => rendered.push('\n'),
             InlineNode::Unknown { node_type, .. } => {
                 warnings.push(format!("WARN: unknown node type \"{node_type}\" skipped"));
@@ -364,7 +369,10 @@ fn render_table_cell_text(content: &[BlockNode], warnings: &mut Vec<String>) -> 
                 if !value.is_empty() {
                     value.push(' ');
                 }
-                value.push_str(&render_inline_nodes(content.as_deref().unwrap_or(&[]), warnings));
+                value.push_str(&render_inline_nodes(
+                    content.as_deref().unwrap_or(&[]),
+                    warnings,
+                ));
             }
             BlockNode::HardBreak => value.push(' '),
             BlockNode::Unknown { node_type, .. } => {

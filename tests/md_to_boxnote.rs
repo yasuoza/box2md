@@ -97,8 +97,9 @@ fn code_block_with_language() {
             let lang = attrs.as_ref().and_then(|a| a.language.as_deref());
             assert_eq!(lang, Some("rust"));
             let has_code = content.as_ref().is_some_and(|c| {
-                c.iter()
-                    .any(|n| matches!(n, InlineNode::Text { text, .. } if text.contains("fn main()")))
+                c.iter().any(
+                    |n| matches!(n, InlineNode::Text { text, .. } if text.contains("fn main()")),
+                )
             });
             assert!(has_code);
         }

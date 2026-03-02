@@ -53,8 +53,7 @@ fn checklist() {
 
 #[test]
 fn horizontal_rule() {
-    let json =
-        r#"{"version":1,"schema_version":1,"doc":{"type":"doc","content":[{"type":"horizontal_rule"}]}}"#;
+    let json = r#"{"version":1,"schema_version":1,"doc":{"type":"doc","content":[{"type":"horizontal_rule"}]}}"#;
     let doc: BoxNoteDocument = serde_json::from_str(json).unwrap();
     let md = boxnote_to_md::convert(&doc).unwrap();
     assert!(md.contains("---"));

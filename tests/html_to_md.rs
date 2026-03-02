@@ -26,7 +26,10 @@ fn lists_html() {
 
 #[test]
 fn formatting_html() {
-    assert_eq!(convert_html_fixture("formatting"), expected_html("formatting"));
+    assert_eq!(
+        convert_html_fixture("formatting"),
+        expected_html("formatting")
+    );
 }
 
 #[test]
@@ -53,9 +56,7 @@ fn blockquote_html() {
 fn horizontal_rule_html() {
     let html = "<hr>";
     let md = html_to_md::convert(html).unwrap();
-    assert!(
-        md.contains("---") || md.contains("***") || md.contains("___") || md.contains("* * *")
-    );
+    assert!(md.contains("---") || md.contains("***") || md.contains("___") || md.contains("* * *"));
 }
 
 #[test]

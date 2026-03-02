@@ -152,9 +152,15 @@ impl<'de> Deserialize<'de> for BlockNode {
 
 #[derive(Debug, Clone, Serialize, PartialEq)]
 pub enum InlineNode {
-    Text { text: String, marks: Vec<InlineMark> },
+    Text {
+        text: String,
+        marks: Vec<InlineMark>,
+    },
     HardBreak,
-    Unknown { node_type: String, raw: Value },
+    Unknown {
+        node_type: String,
+        raw: Value,
+    },
 }
 
 impl InlineNode {
@@ -420,7 +426,9 @@ mod tests {
         let doc: BoxNoteDocument = serde_json::from_str(json).unwrap();
 
         match &doc.doc.content[0] {
-            BlockNode::Paragraph { content: Some(content) } => match &content[0] {
+            BlockNode::Paragraph {
+                content: Some(content),
+            } => match &content[0] {
                 InlineNode::Text { marks, .. } => {
                     assert_eq!(marks[0], InlineMark::Strong);
                     assert_eq!(marks[1], InlineMark::Em);
@@ -474,7 +482,9 @@ mod tests {
         let doc: BoxNoteDocument = serde_json::from_str(json).unwrap();
 
         match &doc.doc.content[0] {
-            BlockNode::Paragraph { content: Some(content) } => match &content[0] {
+            BlockNode::Paragraph {
+                content: Some(content),
+            } => match &content[0] {
                 InlineNode::Unknown { node_type, raw } => {
                     assert_eq!(node_type, "mystery_inline");
                     assert_eq!(raw["foo"], "bar");
@@ -505,7 +515,9 @@ mod tests {
         let doc: BoxNoteDocument = serde_json::from_str(json).unwrap();
 
         match &doc.doc.content[0] {
-            BlockNode::Paragraph { content: Some(content) } => match &content[0] {
+            BlockNode::Paragraph {
+                content: Some(content),
+            } => match &content[0] {
                 InlineNode::Text { marks, .. } => {
                     assert_eq!(
                         marks[0],
