@@ -241,7 +241,9 @@ fn convert_block(
                 output.push('\n');
             }
         }
-        BlockNode::TableRow { .. } | BlockNode::TableCell { .. } | BlockNode::TableHeader { .. } => {
+        BlockNode::TableRow { .. }
+        | BlockNode::TableCell { .. }
+        | BlockNode::TableHeader { .. } => {
             warnings.push(format!(
                 "WARN: unknown node type \"{}\" skipped",
                 block_node_name(block)
@@ -370,10 +372,7 @@ fn render_table_cell_text(content: &[BlockNode], warnings: &mut Vec<String>) -> 
     for block in content {
         match block {
             BlockNode::Paragraph { content } => {
-                let text = render_inline_nodes(
-                    content.as_deref().unwrap_or(&[]),
-                    warnings,
-                );
+                let text = render_inline_nodes(content.as_deref().unwrap_or(&[]), warnings);
                 if !text.is_empty() {
                     parts.push(text);
                 }

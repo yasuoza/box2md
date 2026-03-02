@@ -2,7 +2,10 @@ use clap::{Args, Parser, Subcommand};
 use std::path::PathBuf;
 
 #[derive(Debug, Parser)]
-#[command(name = "box2md", about = "Convert Box Notes to Markdown and vice versa")]
+#[command(
+    name = "box2md",
+    about = "Convert Box Notes to Markdown and vice versa"
+)]
 pub struct Cli {
     #[command(subcommand)]
     pub command: Commands,

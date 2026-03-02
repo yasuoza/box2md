@@ -12,10 +12,7 @@ fn main() -> Result<()> {
                 box2md::convert::html_to_md::convert(&html)?
             } else {
                 let input = box2md::io::read_input(args.input.as_deref())?;
-                let json = input
-                    .find('{')
-                    .map(|i| &input[i..])
-                    .unwrap_or(&input);
+                let json = input.find('{').map(|i| &input[i..]).unwrap_or(&input);
                 let doc: box2md::boxnote::BoxNoteDocument =
                     serde_json::from_str(json).context("failed to parse Box Note JSON")?;
                 doc.doc.validate().map_err(anyhow::Error::msg)?;
