@@ -37,8 +37,11 @@ fn main() -> Result<()> {
             }
             Ok(())
         }
-        box2markdown::cli::Commands::ToBoxnote { .. } => {
-            todo!("Phase 6: md_to_boxnote")
+        box2markdown::cli::Commands::ToBoxnote { args } => {
+            let md = box2markdown::io::read_input(args.input.as_deref())?;
+            let json = box2markdown::convert::md_to_boxnote::convert(&md)?;
+            box2markdown::io::write_output(args.output.as_deref(), &json)?;
+            Ok(())
         }
     }
 }
