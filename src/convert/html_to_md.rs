@@ -2,13 +2,12 @@ use anyhow::Result;
 
 pub fn convert(html: &str) -> Result<String> {
     let html = fix_boxnote_list_nesting(html);
+    // Use placeholders before htmd conversion to avoid escaping
     let html = html
-        .replace("<del>", "~~")
-        .replace("</del>", "~~")
-        .replace("<s>", "~~")
-        .replace("</s>", "~~");
-    // Mark checklist items with placeholders before htmd conversion
-    // (htmd escapes [ ] brackets, so we inject after conversion)
+        .replace("<del>", "STKOPN")
+        .replace("</del>", "STKCLS")
+        .replace("<s>", "STKOPN")
+        .replace("</s>", "STKCLS");
     let html = html
         .replace(r#"<input type="checkbox" checked>"#, "CHKDON ")
         .replace(r#"<input type="checkbox">"#, "CHKTOD ")
@@ -18,7 +17,11 @@ pub fn convert(html: &str) -> Result<String> {
         .skip_tags(vec!["script", "style"])
         .build();
     let md = converter.convert(&html)?;
-    let md = md.replace("CHKDON ", "[x] ").replace("CHKTOD ", "[ ] ");
+    let md = md
+        .replace("STKOPN", "~~")
+        .replace("STKCLS", "~~")
+        .replace("CHKDON ", "[x] ")
+        .replace("CHKTOD ", "[ ] ");
     Ok(normalize_output(&md))
 }
 
