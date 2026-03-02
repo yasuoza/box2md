@@ -1,4 +1,5 @@
 use anyhow::Result;
+use regex::Regex;
 
 pub fn convert(html: &str) -> Result<String> {
     let html = fix_boxnote_list_nesting(html);
@@ -13,6 +14,12 @@ pub fn convert(html: &str) -> Result<String> {
         .replace(r#"<input type="checkbox">"#, "CHKTOD ")
         .replace(r#"<li data-checked="true">"#, "<li>CHKDON ")
         .replace(r#"<li data-checked="false">"#, "<li>CHKTOD ");
+    // Box Note clipboard: <li class="check-list-item is-checked"><p style="...">
+    // Inject placeholder inside <p> tag so htmd keeps it inline with content
+    let re = Regex::new(r#"<li class="check-list-item is-checked"><p[^>]*>"#).unwrap();
+    let html = re.replace_all(&html, "<li><p>CHKDON ").to_string();
+    let re = Regex::new(r#"<li class="check-list-item"><p[^>]*>"#).unwrap();
+    let html = re.replace_all(&html, "<li><p>CHKTOD ").to_string();
     let converter = htmd::HtmlToMarkdown::builder()
         .skip_tags(vec!["script", "style"])
         .build();

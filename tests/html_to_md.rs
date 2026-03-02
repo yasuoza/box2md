@@ -117,3 +117,25 @@ fn strikethrough_del_tag() {
         "expected ~~deleted~~, got: {md}"
     );
 }
+
+#[test]
+fn checklist_boxnote_clipboard() {
+    // Actual Box Note clipboard HTML uses class="check-list-item" with <p style="...">
+    let html = r#"<ul class="check-list"><li class="check-list-item"><p style="font-size: 12pt;"><span>Todo</span></p></li><li class="check-list-item is-checked"><p style="font-size: 12pt;"><span>Done</span></p></li></ul>"#;
+    let md = html_to_md::convert(html).unwrap();
+    assert!(md.contains("[ ] Todo"), "expected [ ] Todo, got: {md}");
+    assert!(md.contains("[x] Done"), "expected [x] Done, got: {md}");
+}
+
+#[test]
+fn boxnote_clipboard_strikethrough_and_checklist() {
+    // Real Box Note clipboard HTML
+    let html = r#"<ul><li><p style="font-size: 12pt;"><span>normal</span></p></li><li><p style="font-size: 12pt;"><s><span>deleted</span></s></p></li></ul><ul class="check-list"><li class="check-list-item"><p style="font-size: 12pt;"><span>todo</span></p></li></ul>"#;
+    let md = html_to_md::convert(html).unwrap();
+    assert!(md.contains("normal"), "expected normal, got: {md}");
+    assert!(
+        md.contains("~~deleted~~"),
+        "expected ~~deleted~~, got: {md}"
+    );
+    assert!(md.contains("[ ] todo"), "expected [ ] todo, got: {md}");
+}
