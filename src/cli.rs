@@ -4,12 +4,14 @@ use std::path::PathBuf;
 #[derive(Debug, Parser)]
 #[command(
     name = "box2md",
-    version = env!("BOX2MD_VERSION"),
     about = "Convert Box Notes to Markdown and vice versa"
 )]
 pub struct Cli {
     #[command(subcommand)]
-    pub command: Commands,
+    pub command: Option<Commands>,
+    /// Print version
+    #[arg(short = 'V', long)]
+    pub version: bool,
 }
 
 #[derive(Debug, Subcommand)]

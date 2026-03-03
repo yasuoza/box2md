@@ -4,7 +4,17 @@ use clap::Parser;
 fn main() -> Result<()> {
     let cli = box2md::cli::Cli::parse();
 
-    match cli.command {
+    if cli.version {
+        println!("{}", env!("BOX2MD_VERSION"));
+        return Ok(());
+    }
+
+    let command = cli.command.unwrap_or_else(|| {
+        box2md::cli::Cli::parse_from(["box2md", "--help"]);
+        unreachable!()
+    });
+
+    match command {
         box2md::cli::Commands::ToMd { args } => {
             let md = if args.from_clipboard {
                 let html = box2md::clipboard::read_html()?
