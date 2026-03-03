@@ -3,7 +3,7 @@ let g:loaded_box2md = 1
 
 let g:box2md_path = get(g:, 'box2md_path', 'box2md')
 
-command! -range Box2html <line1>,<line2>call s:ToHtml()
+command! -range=% Box2html <line1>,<line2>call s:ToHtml()
 command! Box2md call s:ToMd()
 
 function! s:ToHtml() range
