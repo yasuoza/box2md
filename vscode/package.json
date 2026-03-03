@@ -1,0 +1,90 @@
+{
+  "name": "box2md-vscode",
+  "displayName": "box2md",
+  "description": "Use box2md conversions from VSCode.",
+  "version": "0.1.0",
+  "publisher": "yasuoza",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:box2md.toBoxNote",
+    "onCommand:box2md.fromBoxNote",
+    "onCommand:box2md.showSetupGuide"
+  ],
+  "main": "./out/src/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "box2md.toBoxNote",
+        "title": "box2md: Copy as Box Note"
+      },
+      {
+        "command": "box2md.fromBoxNote",
+        "title": "box2md: Paste as Markdown"
+      },
+      {
+        "command": "box2md.showSetupGuide",
+        "title": "box2md: Show Setup Guide"
+      }
+    ],
+    "configuration": {
+      "title": "box2md",
+      "properties": {
+        "box2md.executablePath": {
+          "type": "string",
+          "default": "",
+          "description": "Absolute path to a box2md executable. If empty, PATH is searched first.",
+          "scope": "application"
+        },
+        "box2md.preferBundledBinary": {
+          "type": "boolean",
+          "default": false,
+          "description": "Reserved for future behavior. MVP always resolves PATH before bundled fallback.",
+          "scope": "application"
+        },
+        "box2md.toBoxNote.defaultOutput": {
+          "type": "string",
+          "enum": [
+            "clipboard",
+            "editor"
+          ],
+          "default": "clipboard",
+          "description": "Default output mode for box2md.toBoxNote.",
+          "scope": "window"
+        },
+        "box2md.showVerboseError": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show extra details in error notifications.",
+          "scope": "window"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p .",
+    "watch": "tsc -p . -w",
+    "lint": "eslint \"src/**/*.ts\" \"test/**/*.ts\"",
+    "test": "npm run test:unit && npm run test:integration",
+    "test:unit": "npm run compile && mocha \"out/test/unit/**/*.test.js\"",
+    "test:integration": "npm run compile && mocha \"out/test/integration/**/*.test.js\"",
+    "test:vscode": "npm run compile && vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^20.17.47",
+    "@types/vscode": "^1.95.0",
+    "@typescript-eslint/eslint-plugin": "^8.32.1",
+    "@typescript-eslint/parser": "^8.32.1",
+    "@vscode/test-cli": "^0.0.11",
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^8.57.0",
+    "mocha": "^11.1.0",
+    "typescript": "^5.8.3"
+  }
+}
