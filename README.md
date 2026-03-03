@@ -83,6 +83,28 @@ cat note.md | box2md to-html
 
 Box Notes use a ProseMirror-based JSON format internally. When copied from the browser, they produce HTML. `box2md` handles both formats transparently via the `to-md` command.
 
+## Vim / Neovim Plugin
+
+A plugin is included under `vim/`. It provides two commands:
+
+| Command | Description |
+|---|---|
+| `:'<,'>Box2html` | Convert selected Markdown to HTML and copy to clipboard |
+| `:Box2md` | Convert Box Note HTML from clipboard to Markdown and insert at cursor |
+
+### Installation
+
+```vim
+" vim-plug
+Plug 'yasuoza/box2md', { 'rtp': 'vim' }
+```
+
+To use a custom binary path:
+
+```vim
+let g:box2md_path = '~/.bin/box2md'
+```
+
 ## Tech Stack
 
 - **Rust** (stable) with [clap](https://crates.io/crates/clap) 4 for CLI
