@@ -83,6 +83,28 @@ cat note.md | box2md to-html
 
 Box Notes use a ProseMirror-based JSON format internally. When copied from the browser, they produce HTML. `box2md` handles both formats transparently via the `to-md` command.
 
+## VSCode Extension (MVP)
+
+The repository now includes a VSCode extension project in `vscode/`.
+
+```sh
+cd vscode
+npm install
+npm test
+```
+
+Commands:
+
+- `box2md.toBoxNote` — Convert selected Markdown (or full document) to Box Note-ready content (default output: clipboard)
+- `box2md.fromBoxNote` — Convert clipboard Box Note content to Markdown and insert/replace in editor
+- `box2md.showSetupGuide` — Open setup and recovery guidance
+
+Runtime resolution order:
+
+1. `box2md.executablePath` (if configured and valid)
+2. `box2md` from `PATH`
+3. Bundled fallback under `vscode/bin/{darwin,win32}/`
+
 ## Vim / Neovim Plugin
 
 A plugin is included under `vim/`. It provides two commands:
