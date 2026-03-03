@@ -20,9 +20,13 @@ endfunction
 function! s:ToMd()
   let output = system(g:box2md_path . ' to-md -p')
   if !v:shell_error
-    let text = substitute(output, '\n$', '', '')
-    call setreg('"', text, 'c')
-    normal! p
+    let lines = split(output, "\n")
+    if empty(getline('.'))
+      call setline('.', lines[0])
+      call append('.', lines[1:])
+    else
+      call append(line('.'), lines)
+    endif
   else
     echoerr 'box2md: ' . output
   endif
