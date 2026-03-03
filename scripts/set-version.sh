@@ -5,7 +5,7 @@ usage() {
   echo "Usage: $0 <version>"
   echo "  e.g. $0 0.2.0"
   echo ""
-  echo "Updates version in Cargo.toml, vscode/package.json, and creates a git tag."
+  echo "Updates version in Cargo.toml, vscode/package.json, commits, and tags."
   exit 1
 }
 
@@ -36,7 +36,12 @@ echo "  package-lock.json -> $VERSION"
 (cd "$ROOT" && cargo generate-lockfile --quiet 2>/dev/null || true)
 echo "  Cargo.lock       -> synced"
 
-# 4. Git tag (delete existing if same version, then create)
+# 4. Commit version bump
+(cd "$ROOT" && git add Cargo.toml Cargo.lock vscode/package.json vscode/package-lock.json)
+(cd "$ROOT" && git commit -m "chore: bump version to $VERSION")
+echo "  commit           -> chore: bump version to $VERSION"
+
+# 5. Git tag (delete existing if same version, then create)
 if git rev-parse "$TAG" >/dev/null 2>&1; then
   echo "  git tag $TAG already exists, replacing"
   git tag -d "$TAG" >/dev/null
@@ -45,5 +50,5 @@ git tag "$TAG"
 echo "  git tag          -> $TAG"
 
 echo ""
-echo "Done. Review changes, then:"
-echo "  git add -u && git commit -m 'chore: bump version to $VERSION'"
+echo "Done. Push with:"
+echo "  git push origin HEAD --tags"
