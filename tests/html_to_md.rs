@@ -139,3 +139,12 @@ fn boxnote_clipboard_strikethrough_and_checklist() {
     );
     assert!(md.contains("[ ] todo"), "expected [ ] todo, got: {md}");
 }
+
+#[test]
+fn checklist_comrak_html() {
+    // comrak generates <input type="checkbox" checked="" disabled="" />
+    let html = r#"<ul><li><input type="checkbox" disabled="" /> hello<ul><li><input type="checkbox" checked="" disabled="" /> world</li></ul></li></ul>"#;
+    let md = html_to_md::convert(html).unwrap();
+    assert!(md.contains("[ ] hello"), "expected [ ] hello, got: {md}");
+    assert!(md.contains("[x] world"), "expected [x] world, got: {md}");
+}

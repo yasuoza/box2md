@@ -9,9 +9,12 @@ pub fn convert(html: &str) -> Result<String> {
         .replace("</del>", "STKCLS")
         .replace("<s>", "STKOPN")
         .replace("</s>", "STKCLS");
+    // Checkbox: match checked first, then unchecked (handles checked="", disabled="", />)
+    let re = Regex::new(r#"<input\s+type="checkbox"[^>]*\bchecked\b[^>]*/?\s*>"#).unwrap();
+    let html = re.replace_all(&html, "CHKDON ").to_string();
+    let re = Regex::new(r#"<input\s+type="checkbox"[^>]*/?\s*>"#).unwrap();
+    let html = re.replace_all(&html, "CHKTOD ").to_string();
     let html = html
-        .replace(r#"<input type="checkbox" checked>"#, "CHKDON ")
-        .replace(r#"<input type="checkbox">"#, "CHKTOD ")
         .replace(r#"<li data-checked="true">"#, "<li>CHKDON ")
         .replace(r#"<li data-checked="false">"#, "<li>CHKTOD ");
     // Box Note clipboard: <li class="check-list-item is-checked"><p style="...">
