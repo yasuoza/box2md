@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main, "001-*"]
+    branches: [main, "[0-9]*-*"]
   pull_request:
     branches: [main]
 
@@ -10,12 +10,17 @@ jobs:
   test:
     strategy:
       matrix:
-        os: [macos-latest, windows-latest]
+        os: [macos-latest, ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: vscode/package-lock.json
       - name: Build
         run: cargo build --verbose
       - name: Run tests
@@ -24,3 +29,9 @@ jobs:
         run: cargo clippy -- -D warnings
       - name: Check formatting
         run: cargo fmt -- --check
+      - name: Install extension dependencies
+        run: npm --prefix vscode ci
+      - name: Lint extension
+        run: npm --prefix vscode run lint
+      - name: Run extension tests
+        run: npm --prefix vscode test
