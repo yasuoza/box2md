@@ -83,21 +83,21 @@ cat note.md | box2md to-html
 
 Box Notes use a ProseMirror-based JSON format internally. When copied from the browser, they produce HTML. `box2md` handles both formats transparently via the `to-md` command.
 
-## VSCode Extension (MVP)
+## VSCode Extension
 
-The repository now includes a VSCode extension project in `vscode/`.
+### Installation
+
+Download `box2md-vscode-<version>.vsix` from the [Releases](https://github.com/yasuoza/box2md/releases) page and install:
 
 ```sh
-cd vscode
-npm install
-npm test
+code --install-extension box2md-vscode-*.vsix
 ```
 
-Commands:
+### Commands
 
-- `box2md.toBoxNote` — Convert selected Markdown (or full document) to Box Note-ready content (default output: clipboard)
-- `box2md.fromBoxNote` — Convert clipboard Box Note content to Markdown and insert/replace in editor
-- `box2md.showSetupGuide` — Open setup and recovery guidance
+- **box2md: Copy as Box Note** — Copy Markdown as rich text HTML to clipboard for pasting into Box Note
+- **box2md: Paste as Markdown** — Convert Box Note clipboard content to Markdown and insert into editor
+- **box2md: Show Setup Guide** — Open setup and recovery guidance
 
 Runtime resolution order:
 
