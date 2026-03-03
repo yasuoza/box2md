@@ -1,0 +1,28 @@
+*box2md.txt*    box2md for Vim
+
+box2md is a plugin for calling the box2markdown CLI from Vim/Neovim.
+
+COMMANDS                                                    *box2md-commands*
+
+:Box2html                                                   *:Box2html*
+        Converts selected Markdown to HTML with `box2md to-html -c`
+        and copies it to the clipboard. You can paste it into Box Note.
+
+:Box2md                                                     *:Box2md*
+        Converts Box Note HTML from the clipboard to Markdown with
+        `box2md to-md -p` and inserts it at the cursor position.
+
+CONFIGURATION                                            *box2md-configuration*
+
+g:box2md_path                                             *g:box2md_path*
+        Specifies the path to the box2md binary. Default: >
+            let g:box2md_path = 'box2md'
+<
+
+INSTALLATION                                              *box2md-installation*
+
+Example for vim-plug: >
+    Plug 'yasuoza/box2md', { 'rtp': 'vim' }
+<
+
+vim:tw=78:ts=8:noet:ft=help:norl:
