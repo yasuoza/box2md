@@ -118,9 +118,18 @@ fn checklist_boxnote_format_unchecked() {
 #[test]
 fn checklist_mixed_checked_unchecked() {
     let html = convert("- [x] A\n- [ ] B\n- [x] C\n");
-    assert!(html.contains(r#"<li class="check-list-item is-checked"><p>A</p>"#), "got: {html}");
-    assert!(html.contains(r#"<li class="check-list-item"><p>B</p>"#), "got: {html}");
-    assert!(html.contains(r#"<li class="check-list-item is-checked"><p>C</p>"#), "got: {html}");
+    assert!(
+        html.contains(r#"<li class="check-list-item is-checked"><p>A</p>"#),
+        "got: {html}"
+    );
+    assert!(
+        html.contains(r#"<li class="check-list-item"><p>B</p>"#),
+        "got: {html}"
+    );
+    assert!(
+        html.contains(r#"<li class="check-list-item is-checked"><p>C</p>"#),
+        "got: {html}"
+    );
 }
 
 #[test]
@@ -128,7 +137,10 @@ fn checklist_nested() {
     let html = convert("- [ ] Parent\n  - [x] Child\n");
     // Both <ul> should be check-list
     let count = html.matches(r#"class="check-list""#).count();
-    assert!(count >= 2, "expected ≥2 check-list <ul>, got {count}: {html}");
+    assert!(
+        count >= 2,
+        "expected ≥2 check-list <ul>, got {count}: {html}"
+    );
     assert!(html.contains("<p>Parent</p>"), "got: {html}");
     assert!(html.contains("<p>Child</p>"), "got: {html}");
 }
@@ -200,7 +212,10 @@ fn regular_only_items_no_split() {
     let html = convert("- A\n- B\n- C\n");
     let ul_count = html.matches("<ul").count();
     assert_eq!(ul_count, 1, "expected single <ul>, got {ul_count}: {html}");
-    assert!(!html.contains("<p></p>"), "no separator for regular list, got: {html}");
+    assert!(
+        !html.contains("<p></p>"),
+        "no separator for regular list, got: {html}"
+    );
 }
 
 #[test]
@@ -382,8 +397,14 @@ Bye
 
     // Checklist in check-list <ul>
     assert!(html.contains(r#"class="check-list""#), "got: {html}");
-    assert!(html.contains(r#"check-list-item"><p>Todo</p>"#), "got: {html}");
-    assert!(html.contains(r#"check-list-item is-checked"><p>Done</p>"#), "got: {html}");
+    assert!(
+        html.contains(r#"check-list-item"><p>Todo</p>"#),
+        "got: {html}"
+    );
+    assert!(
+        html.contains(r#"check-list-item is-checked"><p>Done</p>"#),
+        "got: {html}"
+    );
 
     // Regular item separated from checklist
     assert!(html.contains("Regular"), "got: {html}");
@@ -393,5 +414,8 @@ Bye
 
     // Separators between top-level blocks
     let sep_count = html.matches("<p></p>").count();
-    assert!(sep_count >= 2, "expected ≥2 separators, got {sep_count}: {html}");
+    assert!(
+        sep_count >= 2,
+        "expected ≥2 separators, got {sep_count}: {html}"
+    );
 }
