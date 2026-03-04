@@ -79,6 +79,15 @@ pub enum BlockNode {
         attrs: Option<TableCellAttrs>,
         content: Vec<BlockNode>,
     },
+    Image {
+        attrs: ImageAttrs,
+    },
+    TabList {
+        content: Vec<BlockNode>,
+    },
+    BoxPreview {
+        attrs: BoxPreviewAttrs,
+    },
     HorizontalRule,
     HardBreak,
     Unknown {
@@ -141,6 +150,15 @@ impl BlockNode {
                 attrs: parse_opt(&raw, "attrs")?,
                 content: parse_vec(&raw, "content")?,
             }),
+            "image" => Ok(Self::Image {
+                attrs: parse_or_default(&raw, "attrs")?,
+            }),
+            "tab_list" => Ok(Self::TabList {
+                content: parse_vec(&raw, "content")?,
+            }),
+            "box_preview" => Ok(Self::BoxPreview {
+                attrs: parse_or_default(&raw, "attrs")?,
+            }),
             "horizontal_rule" => Ok(Self::HorizontalRule),
             "hard_break" => Ok(Self::HardBreak),
             _ => Ok(Self::Unknown { node_type, raw }),
@@ -165,6 +183,12 @@ pub enum InlineNode {
         marks: Vec<InlineMark>,
     },
     HardBreak,
+    Image {
+        attrs: ImageAttrs,
+    },
+    BoxPreview {
+        attrs: BoxPreviewAttrs,
+    },
     Unknown {
         node_type: String,
         raw: Value,
@@ -189,6 +213,12 @@ impl InlineNode {
                 marks: parse_vec(&raw, "marks")?,
             }),
             "hard_break" => Ok(Self::HardBreak),
+            "image" => Ok(Self::Image {
+                attrs: parse_or_default(&raw, "attrs")?,
+            }),
+            "box_preview" => Ok(Self::BoxPreview {
+                attrs: parse_or_default(&raw, "attrs")?,
+            }),
             _ => Ok(Self::Unknown { node_type, raw }),
         }
     }
@@ -214,6 +244,9 @@ pub enum InlineMark {
     Link { attrs: LinkAttrs },
     AuthorId,
     Highlight,
+    FontColor,
+    FontSize,
+    AnnotationId,
     Unknown { mark_type: String },
 }
 
@@ -236,6 +269,9 @@ impl InlineMark {
             }),
             "author_id" => Ok(Self::AuthorId),
             "highlight" => Ok(Self::Highlight),
+            "font_color" => Ok(Self::FontColor),
+            "font_size" => Ok(Self::FontSize),
+            "annotation_id" => Ok(Self::AnnotationId),
             _ => Ok(Self::Unknown { mark_type }),
         }
     }
@@ -286,6 +322,20 @@ pub struct TableCellAttrs {
     pub rowspan: Option<u32>,
     #[serde(default)]
     pub colwidth: Option<Vec<u32>>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Default)]
+pub struct ImageAttrs {
+    #[serde(default, rename = "fileName")]
+    pub file_name: String,
+    #[serde(default, rename = "childId")]
+    pub child_id: String,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Default)]
+pub struct BoxPreviewAttrs {
+    #[serde(default, rename = "boxSharedLink")]
+    pub box_shared_link: String,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]

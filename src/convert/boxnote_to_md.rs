@@ -61,24 +61,39 @@ fn convert_block(
             output.push_str(&rendered);
             output.push_str("\n\n");
         }
-        BlockNode::BulletList { content } => {
+        BlockNode::BulletList { content } | BlockNode::TabList { content } => {
             let depth = list_depth(list_context);
             let context = ListContext::Bullet { depth };
             for item in content {
-                if let BlockNode::ListItem { content } = item {
-                    render_list_item(
-                        content,
-                        output,
-                        warnings,
-                        &context,
-                        &format!("{}- ", " ".repeat(depth * 2)),
-                        depth * 2 + 2,
-                    );
-                } else {
-                    warnings.push(format!(
-                        "WARN: unknown node type \"{}\" skipped",
-                        block_node_name(item)
-                    ));
+                match item {
+                    BlockNode::ListItem { content } => {
+                        render_list_item(
+                            content,
+                            output,
+                            warnings,
+                            &context,
+                            &format!("{}- ", " ".repeat(depth * 2)),
+                            depth * 2 + 2,
+                        );
+                    }
+                    BlockNode::BulletList { .. }
+                    | BlockNode::TabList { .. }
+                    | BlockNode::OrderedList { .. }
+                    | BlockNode::CheckList { .. } => {
+                        convert_block(
+                            item,
+                            output,
+                            warnings,
+                            0,
+                            &ListContext::Bullet { depth: depth + 1 },
+                        );
+                    }
+                    _ => {
+                        warnings.push(format!(
+                            "WARN: unknown node type \"{}\" skipped",
+                            block_node_name(item)
+                        ));
+                    }
                 }
             }
             if matches!(list_context, ListContext::None) {
@@ -95,22 +110,42 @@ fn convert_block(
                 |a| a.order,
             );
             let context = ListContext::Ordered { depth, start };
-            for (index, item) in content.iter().enumerate() {
-                if let BlockNode::ListItem { content } = item {
-                    let number = start + index as u64;
-                    render_list_item(
-                        content,
-                        output,
-                        warnings,
-                        &context,
-                        &format!("{}{}. ", " ".repeat(depth * 3), number),
-                        depth * 3 + 3,
-                    );
-                } else {
-                    warnings.push(format!(
-                        "WARN: unknown node type \"{}\" skipped",
-                        block_node_name(item)
-                    ));
+            let mut index = 0u64;
+            for item in content {
+                match item {
+                    BlockNode::ListItem { content } => {
+                        let number = start + index;
+                        render_list_item(
+                            content,
+                            output,
+                            warnings,
+                            &context,
+                            &format!("{}{}. ", " ".repeat(depth * 3), number),
+                            depth * 3 + 3,
+                        );
+                        index += 1;
+                    }
+                    BlockNode::BulletList { .. }
+                    | BlockNode::TabList { .. }
+                    | BlockNode::OrderedList { .. }
+                    | BlockNode::CheckList { .. } => {
+                        convert_block(
+                            item,
+                            output,
+                            warnings,
+                            0,
+                            &ListContext::Ordered {
+                                depth: depth + 1,
+                                start: 1,
+                            },
+                        );
+                    }
+                    _ => {
+                        warnings.push(format!(
+                            "WARN: unknown node type \"{}\" skipped",
+                            block_node_name(item)
+                        ));
+                    }
                 }
             }
             if matches!(list_context, ListContext::None) {
@@ -124,21 +159,36 @@ fn convert_block(
             let depth = list_depth(list_context);
             let context = ListContext::CheckList { depth };
             for item in content {
-                if let BlockNode::CheckListItem { attrs, content } = item {
-                    let marker = if attrs.checked { "[x]" } else { "[ ]" };
-                    render_list_item(
-                        content,
-                        output,
-                        warnings,
-                        &context,
-                        &format!("{}- {} ", " ".repeat(depth * 2), marker),
-                        depth * 2 + 6,
-                    );
-                } else {
-                    warnings.push(format!(
-                        "WARN: unknown node type \"{}\" skipped",
-                        block_node_name(item)
-                    ));
+                match item {
+                    BlockNode::CheckListItem { attrs, content } => {
+                        let marker = if attrs.checked { "[x]" } else { "[ ]" };
+                        render_list_item(
+                            content,
+                            output,
+                            warnings,
+                            &context,
+                            &format!("{}- {} ", " ".repeat(depth * 2), marker),
+                            depth * 2 + 6,
+                        );
+                    }
+                    BlockNode::BulletList { .. }
+                    | BlockNode::TabList { .. }
+                    | BlockNode::OrderedList { .. }
+                    | BlockNode::CheckList { .. } => {
+                        convert_block(
+                            item,
+                            output,
+                            warnings,
+                            0,
+                            &ListContext::CheckList { depth: depth + 1 },
+                        );
+                    }
+                    _ => {
+                        warnings.push(format!(
+                            "WARN: unknown node type \"{}\" skipped",
+                            block_node_name(item)
+                        ));
+                    }
                 }
             }
             if matches!(list_context, ListContext::None) {
@@ -155,6 +205,7 @@ fn convert_block(
                 match node {
                     InlineNode::Text { text: value, .. } => text.push_str(value),
                     InlineNode::HardBreak => text.push('\n'),
+                    InlineNode::Image { .. } | InlineNode::BoxPreview { .. } => {}
                     InlineNode::Unknown { node_type, .. } => {
                         warnings.push(format!("WARN: unknown node type \"{node_type}\" skipped"));
                     }
@@ -249,6 +300,19 @@ fn convert_block(
                 block_node_name(block)
             ));
         }
+        BlockNode::Image { attrs } => {
+            let alt = if attrs.file_name.is_empty() {
+                &attrs.child_id
+            } else {
+                &attrs.file_name
+            };
+            output.push_str(&" ".repeat(indent));
+            output.push_str(&format!("![{alt}]()\n"));
+        }
+        BlockNode::BoxPreview { attrs } => {
+            output.push_str(&" ".repeat(indent));
+            output.push_str(&format!("[Box Preview]({})\n", attrs.box_shared_link));
+        }
         BlockNode::HorizontalRule => {
             output.push_str(&" ".repeat(indent));
             output.push_str("---\n\n");
@@ -288,7 +352,7 @@ fn render_list_item(
     let start_index = if consumed_first_paragraph { 1 } else { 0 };
     for block in &content[start_index..] {
         match block {
-            BlockNode::BulletList { .. } => {
+            BlockNode::BulletList { .. } | BlockNode::TabList { .. } => {
                 convert_block(
                     block,
                     output,
@@ -338,6 +402,17 @@ fn render_inline_nodes(nodes: &[InlineNode], warnings: &mut Vec<String>) -> Stri
                 rendered.push_str(&apply_marks(text, marks, warnings))
             }
             InlineNode::HardBreak => rendered.push('\n'),
+            InlineNode::Image { attrs } => {
+                let alt = if attrs.file_name.is_empty() {
+                    &attrs.child_id
+                } else {
+                    &attrs.file_name
+                };
+                rendered.push_str(&format!("![{alt}]()"));
+            }
+            InlineNode::BoxPreview { attrs } => {
+                rendered.push_str(&format!("[Box Preview]({})", attrs.box_shared_link));
+            }
             InlineNode::Unknown { node_type, .. } => {
                 warnings.push(format!("WARN: unknown node type \"{node_type}\" skipped"));
             }
@@ -357,6 +432,9 @@ fn apply_marks(text: &str, marks: &[InlineMark], warnings: &mut Vec<String>) -> 
             InlineMark::Strikethrough => format!("~~{rendered}~~"),
             InlineMark::AuthorId => rendered,
             InlineMark::Highlight => rendered,
+            InlineMark::FontColor => rendered,
+            InlineMark::FontSize => rendered,
+            InlineMark::AnnotationId => rendered,
             InlineMark::Link { attrs } => format!("[{rendered}]({})", attrs.href),
             InlineMark::Unknown { mark_type } => {
                 warnings.push(format!("WARN: unknown mark type \"{mark_type}\" skipped"));
@@ -378,6 +456,7 @@ fn render_table_cell_text(content: &[BlockNode], warnings: &mut Vec<String>) -> 
                 }
             }
             BlockNode::BulletList { .. }
+            | BlockNode::TabList { .. }
             | BlockNode::OrderedList { .. }
             | BlockNode::CheckList { .. } => {
                 parts.push(render_list_as_html(block, warnings));
@@ -401,7 +480,7 @@ fn render_table_cell_text(content: &[BlockNode], warnings: &mut Vec<String>) -> 
 
 fn render_list_as_html(block: &BlockNode, warnings: &mut Vec<String>) -> String {
     match block {
-        BlockNode::BulletList { content } => {
+        BlockNode::BulletList { content } | BlockNode::TabList { content } => {
             let mut html = String::from("<ul>");
             for item in content {
                 if let BlockNode::ListItem { content } = item {
@@ -454,6 +533,7 @@ fn render_list_item_html(content: &[BlockNode], warnings: &mut Vec<String>) -> S
                 ));
             }
             BlockNode::BulletList { .. }
+            | BlockNode::TabList { .. }
             | BlockNode::OrderedList { .. }
             | BlockNode::CheckList { .. } => {
                 parts.push(render_list_as_html(block, warnings));
@@ -508,6 +588,9 @@ fn block_node_name(block: &BlockNode) -> &str {
         BlockNode::TableRow { .. } => "table_row",
         BlockNode::TableCell { .. } => "table_cell",
         BlockNode::TableHeader { .. } => "table_header",
+        BlockNode::Image { .. } => "image",
+        BlockNode::TabList { .. } => "tab_list",
+        BlockNode::BoxPreview { .. } => "box_preview",
         BlockNode::HorizontalRule => "horizontal_rule",
         BlockNode::HardBreak => "hard_break",
         BlockNode::Unknown { node_type, .. } => node_type,

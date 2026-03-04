@@ -26,3 +26,5 @@ vscode/*.vsix
 
 # Claude Code
 .claude/settings.local.json
+.claude/skills
+.mcp.json
