@@ -23,7 +23,5 @@ CLI tool + editor plugins for converting between Box Note and Markdown.
 
 ## Development Guidelines
 
-- Add tests when implementing changes
 - Commit messages follow Conventional Commits (in English)
-- Run `cargo fmt` after code changes before committing
 - Versions are updated in bulk via `scripts/set-version.sh <version>` (Cargo.toml / vscode/package.json / git tag)
