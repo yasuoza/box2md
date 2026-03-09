@@ -2,7 +2,7 @@
   "name": "box2md-vscode",
   "displayName": "box2md",
   "description": "Use box2md conversions from VSCode.",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "publisher": "yasuoza",
   "license": "MIT",
   "engines": {
