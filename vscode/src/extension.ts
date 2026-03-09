@@ -54,7 +54,7 @@ export function activate(context: vscode.ExtensionContext): void {
     runCommand,
     getActiveEditor: () => {
       const editor = vscode.window.activeTextEditor;
-      if (!editor || editor.document.languageId !== 'markdown') {
+      if (!editor) {
         return undefined;
       }
       return toEditorLike(editor);
