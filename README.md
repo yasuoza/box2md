@@ -127,6 +127,37 @@ To use a custom binary path:
 let g:box2md_path = '~/.bin/box2md'
 ```
 
+## AI Agent Skills
+
+The repo ships agent skills (`SKILL.md` files) for AI coding assistants and agent frameworks. See the full [Skills Index](docs/skills.md) for the complete list.
+
+```bash
+# Install all skills at once
+npx skills add https://github.com/yasuoza/box2md
+
+# Or pick only what you need
+npx skills add https://github.com/yasuoza/box2md/tree/main/skills/box2md-to-md
+```
+
+<details>
+<summary>OpenClaw setup</summary>
+
+```bash
+# Symlink all skills (stays in sync with repo)
+ln -s $(pwd)/skills/box2md-* $(pwd)/skills/recipe-* ~/.openclaw/skills/
+
+# Or copy specific skills
+cp -r skills/box2md-to-md ~/.openclaw/skills/
+```
+
+</details>
+
+### Gemini CLI Extension
+
+```bash
+gemini extensions install https://github.com/yasuoza/box2md
+```
+
 ## Tech Stack
 
 - **Rust** (stable) with [clap](https://crates.io/crates/clap) 4 for CLI

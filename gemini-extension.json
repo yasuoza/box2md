@@ -1,0 +1,6 @@
+{
+  "name": "box2md",
+  "version": "latest",
+  "description": "CLI tool for converting between Box Notes and Markdown.",
+  "contextFileName": "CONTEXT.md"
+}
